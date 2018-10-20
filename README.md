@@ -12,3 +12,4 @@
 
 下面是效果图
 
+<div dlign=center><img src="https://github.com/chenshuangsmart/FDFullScreenPopGestureDemo/blob/master/addGes.gif"></div>
