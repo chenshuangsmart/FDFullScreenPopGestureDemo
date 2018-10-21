@@ -14,11 +14,11 @@
 #define EnglishLanguage @"EnglishLanguage"
 
 @interface RTLHelper : NSObject
-
+// 初始化操作
 + (void)initRTL;
-
+// 系统语言是否是阿与
 + (bool)isArabicSystemLanguage;
-
+// 当前APP是否是阿语环境
 + (bool)isRTL;
 
 + (void)setController;
