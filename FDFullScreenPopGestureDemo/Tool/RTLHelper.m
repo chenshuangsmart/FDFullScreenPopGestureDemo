@@ -61,6 +61,7 @@ static NSNumber *isArabicKay = nil;
 // 新增TabBar后直接处理为重设APP界面
 + (void)setController {
     NSMutableArray *tbViewControllers = [NSMutableArray arrayWithArray:[[IContext getCtx].rootTabBarController viewControllers]];
+    // 移除栈中所有控制器
     for (BaseNavigationController *navVc in tbViewControllers) {
         for (BaseViewController *vc in navVc.childViewControllers) {
             [vc removeFromParentViewController];
@@ -69,6 +70,7 @@ static NSNumber *isArabicKay = nil;
     [tbViewControllers removeAllObjects];
     [[IContext getCtx].rootTabBarController setViewControllers:tbViewControllers];
 
+    // 给window设置一个新的根控制器
     MainViewController *tb = [[MainViewController alloc] init];
     [IContext getCtx].rootTabBarController = tb;
     [[IContext getCtx].rootWindow setRootViewController:tb];

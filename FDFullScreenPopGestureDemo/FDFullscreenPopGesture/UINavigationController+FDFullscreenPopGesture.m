@@ -164,20 +164,22 @@ typedef void (^_FDViewControllerWillAppearInjectBlock)(UIViewController *viewCon
         } else {
             method_exchangeImplementations(originalMethod2, swizzledMethod2);
         }
-        
     });
 }
 
 - (void)fd_viewWillAppear:(BOOL)animated
 {
     // Forward to primary implementation.
+    // 为了不破坏原本的业务逻辑，先执行原来的viewWillAppear方法
     [self fd_viewWillAppear:animated];
     
+    // 执行注入的block 这个block到底干了什么事情，会在后面讲到
     if (self.fd_willAppearInjectBlock) {
         self.fd_willAppearInjectBlock(self, animated);
     }
     
     //设置导航的显示/隐藏
+    // 根据导航栏栈顶控制的fd_prefersNavigationBarHidden这个分类属性，- 控制导航栏是否需要隐藏
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(CGFLOAT_MIN * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         UIViewController *vc = [self.navigationController.viewControllers lastObject];
         if (vc.fd_prefersNavigationBarHidden) {
@@ -201,16 +203,20 @@ typedef void (^_FDViewControllerWillAppearInjectBlock)(UIViewController *viewCon
             [self.navigationController setNavigationBarHidden:NO animated:NO];
         }
     });
-    
 }
 
 - (_FDViewControllerWillAppearInjectBlock)fd_willAppearInjectBlock
 {
+    // 1. 调用fd_willAppearInjectBlock属性的get方法的时候
+    // 2. 会在本类中以该get方法的名称为key，找到对应的value，也就是该block的值
     return objc_getAssociatedObject(self, _cmd);
 }
 
 - (void)setFd_willAppearInjectBlock:(_FDViewControllerWillAppearInjectBlock)block
 {
+    // 1. 当调用了fd_willAppearInjectBlock这个分类属性的set方法时候，
+    // 2. 会以block为value 以该属性的get方法为key将block存储起来
+    // 3. 以后就可以通过调用fd_willAppearInjectBlock属性的get方法，获取block
     objc_setAssociatedObject(self, @selector(fd_willAppearInjectBlock), block, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
@@ -244,8 +250,7 @@ typedef void (^_FDViewControllerWillAppearInjectBlock)(UIViewController *viewCon
 
 @implementation UINavigationController (FDFullscreenPopGesture)
 
-+ (void)load
-{
++ (void)load {
     // Inject "-pushViewController:animated:"
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -257,6 +262,13 @@ typedef void (^_FDViewControllerWillAppearInjectBlock)(UIViewController *viewCon
         Method originalMethod = class_getInstanceMethod(class, originalSelector);
         Method swizzledMethod = class_getInstanceMethod(class, swizzledSelector);
         
+        // 1.这里要注意，class_addMethod是为了检查本类是否实现了这个方法
+        // 2.如果方法添加成功，代表本类没有实现该方法（该方法在父类中实现，却没有在子类中实现）
+        // 3.如果实现了，那很好，直接交换
+        // 4.如果没实现，那么class_addMethod已经把push方法 (对应的实现是fd_push)添加到了本类
+        // 5.我们只需要再调用class_replaceMethod方法添加fd_push(对应的实现是push) 添加到本类
+        // 6.这样，就达到了方法交换的目的
+        // 7.pushViewController:animated: 的内部实现为fd_pushViewController:animated:
         BOOL success = class_addMethod(class, originalSelector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod));
         if (success) {
             class_replaceMethod(class, swizzledSelector, method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod));
