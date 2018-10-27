@@ -186,7 +186,6 @@ typedef void (^_FDViewControllerWillAppearInjectBlock)(UIViewController *viewCon
             [self.navigationController setNavigationBarHidden:NO animated:NO];
         }
     });
-    
 }
 
 - (void)fd_viewWillDisappear:(BOOL)animated{

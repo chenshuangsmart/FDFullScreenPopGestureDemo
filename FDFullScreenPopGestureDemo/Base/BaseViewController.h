@@ -26,7 +26,6 @@
 
 // 返回按钮点击操作
 - (void)doBackPrev;
-
 // 扫码和心愿单
 - (void)addScanAndWishList;
 // 设置导航条透明
