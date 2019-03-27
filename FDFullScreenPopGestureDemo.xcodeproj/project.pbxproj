@@ -444,7 +444,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = banggood.FDFullScreenPopGestureDemo;
+				PRODUCT_BUNDLE_IDENTIFIER = cs.FDFullScreenPopGestureDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -461,7 +461,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = banggood.FDFullScreenPopGestureDemo;
+				PRODUCT_BUNDLE_IDENTIFIER = cs.FDFullScreenPopGestureDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
